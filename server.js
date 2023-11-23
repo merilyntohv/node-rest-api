@@ -1,4 +1,4 @@
-import express from "express";
+import express, { request, response } from "express";
 import { PrismaClient } from "@prisma/client";
 
 const app = express();
@@ -17,8 +17,8 @@ app.get('/books', async (request, response) => {
     } catch (error) {
         console.log(error);
         response.status(400).send({
-            message: "Midagi läks valesti"
-        })
+            message: "Midagi läks valesti",
+        });
     }
 });
 
@@ -44,6 +44,23 @@ app.get('/books/:id', async (request, response) => {
             message: error.message,
         });
     }     
+});
+
+app.delete("/books/:id", async (request, response) => {
+    
+    const { id } = request.params;
+    
+    try{
+        await prisma.books.delete({
+            where: {
+                id: Number(id),
+            }
+        });
+
+        response.status(201);
+    } catch (error){
+        response.status(400).json({message: "Midagi läks valesti."});
+    }
 });
 
 const PORT = 5500;
